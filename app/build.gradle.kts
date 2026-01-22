@@ -16,11 +16,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.smartfarm"
+    namespace = "com.example.smartfarm.activity"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.smartfarm"
+        applicationId = "com.example.smartfarm.activity"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -47,6 +47,12 @@ android {
             "String",
             "MAP_API_KEY",
             "\"${keysProperties.getProperty("MAP_API_KEY", "")}\""
+        )
+
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_CLIENT_ID",
+            "\"${keysProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -99,6 +105,7 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -170,6 +177,4 @@ dependencies {
 
     // Optional: Places API for better location search
     implementation("com.google.android.libraries.places:places:5.0.0")
-
-
 }

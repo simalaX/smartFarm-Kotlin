@@ -8,7 +8,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialException
-import com.example.smartfarm.R
+import com.example.smartfarm.activity.BuildConfig  // Changed this import
 import com.example.smartfarm.ui.features.auth.data.local.UserPreferences
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -27,43 +27,22 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthRepository @Inject constructor(
-    //@ApplicationContext private val context: Context,
     private val firebaseAuth: FirebaseAuth,
     private val userPreferences: UserPreferences
 ) {
-    //private val credentialManager = CredentialManager.create(context)
     private fun getCredentialManager(context: Context): CredentialManager {
         return CredentialManager.create(context)
     }
 
     val currentUser: FirebaseUser? get() = firebaseAuth.currentUser
-//    val currentUser: StateFlow<FirebaseUser?> = firebaseAuth.currentUser
-//        .map { user ->
-//            Timber.d("AuthRepository: authStateChanged -> ${user?.uid ?: "null"}")
-//            user
-//        }
-//        .stateIn(
-//            scope = CoroutineScope(Dispatchers.IO),
-//            started = SharingStarted.WhileSubscribed(5000),
-//            initialValue = firebaseAuth.currentUser
-//        )
     val isLoggedIn = userPreferences.isLoggedIn
 
-    /**
-     * Sign in with Google using Credential Manager API (New Way - Not Deprecated)
-     */
     suspend fun signInWithGoogle(context: Context): AuthResult {
         return try {
-            // Step 1: Get credentials using Credential Manager
             val credentialResponse = getGoogleCredentials(context)
-
-            // Step 2: Extract Google ID Token
             val googleIdToken = extractGoogleIdToken(credentialResponse)
                 ?: return AuthResult.Error("Failed to extract Google ID token")
-
-            // Step 3: Authenticate with Firebase
             authenticateWithFirebase(googleIdToken)
-
         } catch (e: GetCredentialException) {
             Timber.tag(TAG).e(e, "Credential Manager error")
             AuthResult.Error(handleCredentialException(e))
@@ -73,14 +52,11 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /**
-     * Get Google credentials using Credential Manager
-     */
     private suspend fun getGoogleCredentials(context: Context): GetCredentialResponse {
         val googleIdOption = GetGoogleIdOption.Builder()
-            .setServerClientId(context.getString(R.string.default_web_client_id))
-            .setFilterByAuthorizedAccounts(false) // Show all accounts, not just authorized ones
-            .setAutoSelectEnabled(true) // Auto-select if only one account
+            .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+            .setFilterByAuthorizedAccounts(false)
+            .setAutoSelectEnabled(true)
             .build()
 
         val request = GetCredentialRequest.Builder()
@@ -93,12 +69,8 @@ class AuthRepository @Inject constructor(
         )
     }
 
-    /**
-     * Extract Google ID Token from credential response
-     */
     private fun extractGoogleIdToken(response: GetCredentialResponse): String? {
         val credential = response.credential
-
         return if (credential is CustomCredential &&
             credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
@@ -108,9 +80,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /**
-     * Authenticate with Firebase using Google ID token
-     */
     private suspend fun authenticateWithFirebase(idToken: String): AuthResult {
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -118,7 +87,6 @@ class AuthRepository @Inject constructor(
             val user = authResult.user
 
             if (user != null) {
-                // Save user session
                 userPreferences.saveUserSession(
                     userId = user.uid,
                     email = user.email ?: "",
@@ -134,21 +102,12 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /**
-     * Sign out from Firebase and clear credentials
-     */
     suspend fun signOut(context: Context) {
         try {
-            // Sign out from Firebase
             firebaseAuth.signOut()
-
-            // Clear user preferences
             userPreferences.clearUserSession()
-
-            // Clear credential state from Credential Manager
             val clearRequest = ClearCredentialStateRequest()
             getCredentialManager(context).clearCredentialState(clearRequest)
-
             Timber.tag(TAG).d("Sign out successful")
         } catch (e: ClearCredentialException) {
             Timber.tag(TAG).e(e, "Error clearing credentials")
@@ -157,9 +116,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    /**
-     * Handle Credential Manager exceptions
-     */
     private fun handleCredentialException(e: GetCredentialException): String {
         return when (e::class.simpleName) {
             "GetCredentialCancellationException" -> "Sign-in was cancelled"

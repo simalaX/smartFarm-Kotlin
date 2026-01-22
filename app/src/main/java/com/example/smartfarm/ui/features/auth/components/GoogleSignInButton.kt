@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.smartfarm.R
+import com.example.smartfarm.activity.R  // Added this import
 
 @Composable
 fun GoogleSignInButton(
@@ -67,7 +67,6 @@ fun GoogleSignInButton(
                 Icon(
                     painter = painterResource(id = R.drawable.google),
                     contentDescription = "Google",
-                    //modifier = Modifier.size(20.dp),
                     tint = Color.Unspecified
                 )
 

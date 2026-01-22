@@ -151,9 +151,6 @@ fun NavGraph(
             composable (Routes.Settings.route){
                 SettingsScreen(
 
-                    onNavigateBack = {
-                        navController.navigateUp()
-                    },
                     onNavigateToProfile = {
                         navController.navigate(Routes.Profile.route)
                     },

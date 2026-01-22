@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.smartfarm.R
+import com.example.smartfarm.activity.R  // Added this import
 import com.example.smartfarm.ui.features.profile.viewModel.ProfileViewModel
 import com.example.smartfarm.ui.features.profile.modle.UserData
 
@@ -88,27 +88,27 @@ fun ProfileScreen(
             .fillMaxSize()
     ) {
 
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "My Profile",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+        TopAppBar(
+            title = {
+                Text(
+                    text = "My Profile",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
                 )
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface
             )
+        )
         when {
             uiState.isLoading -> {
                 Box(
@@ -223,7 +223,6 @@ private fun ProfileHeader(userData: UserData?) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        //elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(
             modifier = Modifier
@@ -231,7 +230,7 @@ private fun ProfileHeader(userData: UserData?) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Cute Avatar with gradient background
+            // Profile Avatar
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -247,29 +246,24 @@ private fun ProfileHeader(userData: UserData?) {
                     .clickable { isPressed = true },
                 contentAlignment = Alignment.Center
             ) {
-                AsyncImage(
-                    model = userData?.profilePictureUrl,
-                    contentDescription = "User Profile Picture",
-                    modifier = Modifier.fillMaxSize(),
-                )
-//                if (userData?.profilePictureUrl != null) {
-//                    // Load profile picture from URL
-//                    Image(
-//                        painter = rememberAsyncImagePainter(userData.profilePictureUrl),
-//                        contentDescription = "Profile picture",
-//                        modifier = Modifier
-//                            .size(120.dp)
-//                            .clip(CircleShape),
-//                        contentScale = ContentScale.Crop
-//                    )
-//                } else {
-//                    // Default cute avatar
-//                    Image(
-//                        painter = painterResource(id = R.drawable.farmbrigelogo),
-//                        contentDescription = "Default avatar",
-//                        modifier = Modifier.size(80.dp)
-//                    )
-//                }
+                if (userData?.profilePictureUrl != null) {
+                    AsyncImage(
+                        model = userData.profilePictureUrl,
+                        contentDescription = "User Profile Picture",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // Default icon when no profile picture
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Default avatar",
+                        modifier = Modifier.size(60.dp),
+                        tint = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -289,7 +283,7 @@ private fun ProfileHeader(userData: UserData?) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Edit Profile Button (cute style)
+            // Edit Profile Button
             Surface(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
@@ -539,12 +533,4 @@ private fun LogoutButton(isLoggingOut: Boolean, onLogout: () -> Unit) {
             isPressed = false
         }
     }
-}
-
-// Add this for image loading (you might need to add Coil dependency)
-@Composable
-fun rememberAsyncImagePainter(url: String): androidx.compose.ui.graphics.painter.Painter {
-    // Implementation depends on your image loading library
-    // For Coil: rememberAsyncImagePainter(model = url)
-    return painterResource(id = R.drawable.farmbrigelogo) // Fallback
 }

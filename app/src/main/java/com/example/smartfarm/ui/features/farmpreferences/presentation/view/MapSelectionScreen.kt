@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.BuildConfig
+import com.example.smartfarm.activity.BuildConfig  // Changed this line
 import com.example.smartfarm.ui.features.farmpreferences.domain.models.FarmLocation
 import com.example.smartfarm.utils.rememberLocationPermissionState
 import com.google.android.gms.maps.GoogleMapOptions
@@ -81,7 +81,6 @@ fun MapSelectionScreen(
             if (locationPermissionState.hasPermission) {
                 FloatingActionButton(
                     onClick = {
-
                         // Center on current location
                         // You can implement this with FusedLocationProviderClient
                     },
@@ -112,18 +111,18 @@ fun MapSelectionScreen(
                             "Lat: ${latLng.latitude}, Lng: ${latLng.longitude}",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         OutlinedTextField(
                             value = locationName,
                             onValueChange = { locationName = it },
                             label = { Text("Location Name (e.g., My Farm)") },
                             modifier = Modifier.fillMaxWidth()
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Button(
                             onClick = {
                                 if (locationName.isNotBlank()) {
@@ -153,9 +152,7 @@ fun MapSelectionScreen(
         }
     ) { paddingValues ->
 
-        if (mapsApiKey.isNotBlank()) {
-
-
+        if (mapsApiKey.isNotBlank()) {  // Changed this line - removed the custom isNotBlank property
             GoogleMap(
                 modifier = Modifier
                     .fillMaxSize()
@@ -165,13 +162,10 @@ fun MapSelectionScreen(
                 },
                 properties = MapProperties(
                     isMyLocationEnabled = locationPermissionState.hasPermission,
-                    // Pass the API key programmatically
                 ),
-
                 googleMapOptionsFactory = {
                     GoogleMapOptions().apply {
                         // The API key is now handled automatically by the Maps SDK
-                        // since we're not using manifest
                     }
                 },
                 onMapClick = { latLng ->
@@ -214,7 +208,6 @@ fun MapSelectionScreen(
                 }
             }
         }
-
 
         // Handle location permission
         if (!locationPermissionState.hasPermission) {

@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.smartfarm" />
-                  <option name="mobileSdkAppId" value="1:1044310901701:android:0c4a3e0f2152607ab681ac" />
-                  <option name="projectId" value="smartfarm-8a008" />
-                  <option name="projectNumber" value="1044310901701" />
+                  <option name="appId" value="com.example.smartfarm.activity" />
+                  <option name="mobileSdkAppId" value="1:32157673685:android:366aeb40e87b84067b9a5c" />
+                  <option name="projectId" value="daddie-and-sab-propertie-1ac72" />
+                  <option name="projectNumber" value="32157673685" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
